@@ -91,4 +91,5 @@ lazy val leetcodeSettings = Seq(
   libraryDependencies ++= leetcodeDependencies,
   Compile / compile / wartremoverErrors -= Wart.DefaultArguments,
   Compile / compile / wartremoverErrors -= Wart.NonUnitStatements,
+  Compile / compile / wartremoverErrors -= Wart.TraversableOps,
 )
