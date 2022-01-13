@@ -1,5 +1,5 @@
 [package]
-name = "p94_binary_tree_inorder_traversal"
+name = "p0064_add_binary"
 version = "0.1.0"
 edition = "2021"
 

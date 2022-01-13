@@ -1,5 +1,5 @@
 [package]
-name = "p69_sqrt"
+name = "p0083_remove_duplicates_from_sorted_list"
 version = "0.1.0"
 edition = "2021"
 

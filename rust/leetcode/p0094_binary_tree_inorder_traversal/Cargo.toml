@@ -1,5 +1,5 @@
 [package]
-name = "p88_merge_sorted_array"
+name = "p0094_binary_tree_inorder_traversal"
 version = "0.1.0"
 edition = "2021"
 
