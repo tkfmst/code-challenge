@@ -21,7 +21,7 @@
 ///
 /// Constraints:
 /// * The number of nodes in the tree is in the range [1, 1000].
-/// * -100 <= Node.val <= 100
+/// * -100 <= Link.val <= 100
 ///
 /// Follow up: Could you solve it both recursively and iteratively?
 use std::cell::RefCell;
@@ -47,56 +47,26 @@ impl TreeNode {
 
 pub struct Solution {}
 
+type Link = Option<Rc<RefCell<TreeNode>>>;
+
 impl Solution {
     pub fn is_symmetric(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
         match root {
-            Some(node) => {
-                let left = Rc::clone(&node)
-                    .borrow()
-                    .left
-                    .as_ref()
-                    .map(|x| Rc::clone(&x));
-                let right = Rc::clone(&node)
-                    .borrow()
-                    .right
-                    .as_ref()
-                    .map(|x| Rc::clone(&x));
-
-                left == right && is_symmetric_equal(left, right)
-            }
-            None => false,
+            None => true,
+            Some(node) => Self::symmetric_equals(&node.borrow().left, &node.borrow().right),
         }
     }
-}
 
-fn is_symmetric_equal(p: Option<Rc<RefCell<TreeNode>>>, q: Option<Rc<RefCell<TreeNode>>>) -> bool {
-    match (p, q) {
-        (Some(_p), Some(_q)) => {
-            let p_left = Rc::clone(&_p).borrow().left.as_ref().map(|x| Rc::clone(&x));
-            let p_right = Rc::clone(&_p)
-                .borrow()
-                .right
-                .as_ref()
-                .map(|x| Rc::clone(&x));
-            let q_left = Rc::clone(&_q).borrow().left.as_ref().map(|x| Rc::clone(&x));
-            let q_right = Rc::clone(&_q)
-                .borrow()
-                .right
-                .as_ref()
-                .map(|x| Rc::clone(&x));
-
-            match (p_left, q_right) {
-                (Some(p_l), Some(q_r) => Rc::clone(&p)&_l.val == q_r.val,
-                (None, None) => true,
-                _ => false,
-            };
-            p_left == q_right
-                && p_right == q_left
-                && is_symmetric_equal(p_left, q_right)
-                && is_symmetric_equal(p_right, q_left)
+    fn symmetric_equals(p: &Link, q: &Link) -> bool {
+        match (p, q) {
+            (None, None) => true,
+            (Some(pnode), Some(qnode)) => {
+                pnode.borrow().val == qnode.borrow().val
+                    && Self::symmetric_equals(&pnode.borrow().left, &qnode.borrow().right)
+                    && Self::symmetric_equals(&pnode.borrow().right, &qnode.borrow().left)
+            }
+            _ => false,
         }
-        (None, None) => true,
-        _ => false,
     }
 }
 
