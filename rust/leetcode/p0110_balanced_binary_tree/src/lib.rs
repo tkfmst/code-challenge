@@ -93,4 +93,22 @@ mod tests {
         let root = TreeNode::build(vec![]);
         assert_eq!(Solution::is_balanced(root), true);
     }
+
+    #[test]
+    fn test_is_balanced4() {
+        let root = TreeNode::build(vec![
+            Some(1),
+            Some(2),
+            Some(2),
+            Some(3),
+            None,
+            None,
+            Some(3),
+            Some(4),
+            None,
+            None,
+            Some(4),
+        ]);
+        assert_eq!(Solution::is_balanced(root), false);
+    }
 }

@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::slice::Iter;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
@@ -9,38 +10,57 @@ pub struct TreeNode {
 }
 
 impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+impl TreeNode {
     pub fn build(input: Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        let idx: u32 = 0;
-        if let Some(Some(n)) = input.get(0) {
-            Self::build_node(idx, *n, &input)
+        let mut it = input.iter();
+        let mut buf: Vec<Option<Rc<RefCell<TreeNode>>>> = vec![];
+        if let Some(Some(n)) = it.next() {
+            let root = Some(Rc::new(RefCell::new(TreeNode::new(*n))));
+
+            buf.push(root.as_ref().map(|x| Rc::clone(x)));
+            Self::build_node(&mut it, buf);
+
+            root
         } else {
             None
         }
     }
+    fn build_node(input: &mut Iter<Option<i32>>, nodes: Vec<Option<Rc<RefCell<TreeNode>>>>) {
+        let mut buf: Vec<Option<Rc<RefCell<TreeNode>>>> = vec![];
 
-    fn build_node(idx: u32, val: i32, input: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        Some(Rc::new(RefCell::new(TreeNode {
-            val: val,
-            left: Self::build_left(idx, input),
-            right: Self::build_right(idx, input),
-        })))
-    }
+        for op in nodes.iter() {
+            if let Some(node) = op {
+                let left = match input.next() {
+                    Some(Some(n)) => Some(Rc::new(RefCell::new(TreeNode::new(*n)))),
+                    _ => None,
+                };
+                let right = match input.next() {
+                    Some(Some(n)) => Some(Rc::new(RefCell::new(TreeNode::new(*n)))),
+                    _ => None,
+                };
+                buf.push(left.as_ref().map(|x| Rc::clone(&x)));
+                buf.push(right.as_ref().map(|x| Rc::clone(&x)));
 
-    fn build_left(parent_idx: u32, input: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        let idx = parent_idx * 2 + 1;
-        if let Some(Some(n)) = input.get(idx as usize) {
-            Self::build_node(idx, *n, input)
-        } else {
-            None
+                node.borrow_mut().left = left.map(|x| Rc::clone(&x));
+                node.borrow_mut().right = right.map(|x| Rc::clone(&x));
+            } else {
+                buf.push(None);
+                buf.push(None);
+            }
         }
-    }
 
-    fn build_right(parent_idx: u32, input: &Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
-        let idx = parent_idx * 2 + 2;
-        if let Some(Some(n)) = input.get(idx as usize) {
-            Self::build_node(idx, *n, input)
-        } else {
-            None
+        if input.len() > 0 {
+            Self::build_node(input, buf);
         }
     }
 }
@@ -88,6 +108,53 @@ mod tests {
                 val: 2,
                 left: None,
                 right: None,
+            }))),
+        })));
+        assert_eq!(TreeNode::build(input), result)
+    }
+
+    #[test]
+    fn test_build_0110() {
+        let input = vec![
+            Some(1),
+            Some(2),
+            Some(2),
+            Some(3),
+            None,
+            None,
+            Some(3),
+            Some(4),
+            None,
+            None,
+            Some(4),
+        ];
+        let result = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 4,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: None,
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 4,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
             }))),
         })));
         assert_eq!(TreeNode::build(input), result)
