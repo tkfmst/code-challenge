@@ -25,17 +25,37 @@ pub struct Solution {}
 
 impl Solution {
     // Newton's method
-    pub fn my_sqrt(x: i32) -> i32 {
-        let a: f64 = x as f64;
-        let mut b: f64 = a;
+    pub fn my_sqrt(num: i32) -> i32 {
+        // x(0)^2 = num
+        // 0 = x(0)^2 - num
+        //
+        // // Therefore the intersection of (A) and (B) is the solution.
+        // (A) f(x(n)) = x(n)^2 - x(0)
+        // (B) y = 0
+        //
+        // // grad
+        // (f(x(n+1)) - f(x(n))) / (x(n+1) - x(n)) = f'(x(n))
+        // f'(x(n)) = 2x(n)
+        //
+        // // when f(x(n+1)) = 0
+        // x(n+1) = x(n) - f(x(n)) / f'(x(n)))
+        //
+        // // when f(x(n)) = x(n)^2 + x(0)
+        // x(n+1) = x(n) - (x(n)^2 + x(0)) / f'(x(n))
+        //
+        // // when f'(x(n)) = 2x(n)
+        // x(n+1) = x(n) - (x(n)^2 + x(0)) / (2 * (x(n)))
+        // x(n+1) = (x(n)^2 + x(0)) / (2 * (x(n)))
+        let x_0: f64 = num as f64;
+        let mut x_n: f64 = x_0;
         loop {
-            let bi: i32 = b as i32;
-            b = (b * b + a) / (2_f64 * b);
-            if b as i32 == bi {
+            let x_n_1: i32 = x_n as i32;
+            x_n = (x_n * x_n + x_0) / (2_f64 * x_n);
+            if x_n as i32 == x_n_1 {
                 break;
             }
         }
-        b as i32
+        x_n as i32
     }
 }
 
