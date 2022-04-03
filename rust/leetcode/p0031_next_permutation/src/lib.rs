@@ -1,0 +1,141 @@
+/// 31. Next Permutation
+/// Medium
+///
+/// A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
+///
+/// For example, for arr = [1,2,3], the following are considered permutations of arr: [1,2,3], [1,3,2], [3,1,2], [2,3,1].
+///
+/// The next permutation of an array of integers is the next lexicographically greater permutation of its integer. More formally, if all the permutations of the array are sorted in one container according to their lexicographical order, then the next permutation of that array is the permutation that follows it in the sorted container. If such arrangement is not possible, the array must be rearranged as the lowest possible order (i.e., sorted in ascending order).
+///
+/// For example, the next permutation of arr = [1,2,3] is [1,3,2].
+/// Similarly, the next permutation of arr = [2,3,1] is [3,1,2].
+/// While the next permutation of arr = [3,2,1] is [1,2,3] because [3,2,1] does not have a lexicographical larger rearrangement.
+///
+/// Given an array of integers nums, find the next permutation of nums.
+///
+/// The replacement must be in place and use only constant extra memory.
+///
+///
+/// Example 1:
+///
+/// Input: nums = [1,2,3]
+/// Output: [1,3,2]
+///
+/// Example 2:
+///
+/// Input: nums = [3,2,1]
+/// Output: [1,2,3]
+///
+/// Example 3:
+///
+/// Input: nums = [1,1,5]
+/// Output: [1,5,1]
+///
+///
+/// Constraints:
+/// * 1 <= nums.length <= 100
+/// * 0 <= nums[i] <= 100
+///
+pub struct Solution {}
+impl Solution {
+    // @see https://leetcode.com/problems/next-permutation/discuss/13994/Readable-code-without-confusing-ij-and-with-explanation
+    pub fn next_permutation(nums: &mut Vec<i32>) {
+        let last = nums.len() - 1;
+        let mut pivot = 0;
+
+        let mut i = last;
+        while i > 0 {
+            if nums[i - 1] < nums[i] {
+                pivot = i - 1;
+                break;
+            }
+            i -= 1;
+        }
+        if i == 0 {
+            nums.sort();
+            return;
+        }
+
+        let mut j = last;
+        while j > 0 {
+            if nums[pivot] < nums[j] {
+                nums.swap(pivot, j);
+                break;
+            }
+            j -= 1;
+        }
+
+        let partial_sorted = {
+            let mut buf = nums[(pivot + 1)..=last].to_vec();
+            buf.sort();
+            buf
+        };
+
+        let mut k = 0;
+        while (pivot + 1 + k) <= last {
+            nums[pivot + 1 + k] = partial_sorted[k];
+            k += 1;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Solution;
+
+    #[test]
+    fn test_next_permutation_1() {
+        let mut nums = vec![1, 2, 3];
+        let output = vec![1, 3, 2];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_2() {
+        let mut nums = vec![3, 2, 1];
+        let output = vec![1, 2, 3];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_3() {
+        let mut nums = vec![1, 1, 5];
+        let output = vec![1, 5, 1];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_a1() {
+        let mut nums = vec![1, 3, 2];
+        let output = vec![2, 1, 3];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_a2() {
+        let mut nums = vec![2, 1, 3];
+        let output = vec![2, 3, 1];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_b1() {
+        let mut nums = vec![1, 2, 3, 4];
+        let output = vec![1, 2, 4, 3];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+
+    #[test]
+    fn test_next_permutation_b2() {
+        let mut nums = vec![1, 2, 4, 3];
+        let output = vec![1, 3, 2, 4];
+        Solution::next_permutation(&mut nums);
+        assert_eq!(nums, output);
+    }
+}
